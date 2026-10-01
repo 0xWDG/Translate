@@ -73,7 +73,7 @@ The command prints one `language-code<TAB>language-name` entry per line. A langu
 ```sh
 translate "Where is the station?" to German
 translate "Where is the station?" -de
-translate "Olá" -pt-BR
+translate "Olá" -ar-AE
 ```
 
 ## How it works
@@ -87,12 +87,8 @@ For Apple’s current model availability rules, see [LanguageAvailability](https
 ```sh
 swift test
 swift build -c release
-swiftlint --strict Sources Tests Package.swift
+swiftlint --strict
 ```
-
-## Releases
-
-Publishing a GitHub release automatically updates the `translate` formula in [0xWDG/homebrew-tap](https://github.com/0xWDG/homebrew-tap). Before publishing a release, add a `HOMEBREW_TAP_TOKEN` Actions secret to this repository. The token needs **Contents: Read and write** access to `0xWDG/homebrew-tap`; use a fine-grained personal access token limited to that repository.
 
 ## Limitations
 
