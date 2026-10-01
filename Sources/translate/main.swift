@@ -108,6 +108,7 @@ struct TranslationRequest: Equatable {
 }
 
 /// Translates validated requests with a downloaded Apple translation model.
+@available(macOS 26.0, *)
 struct Translator {
     /// Detects the source language, verifies the installed model, and translates the request.
     ///
@@ -138,6 +139,7 @@ struct Translator {
 }
 
 /// Produces a stable, readable list of language identifiers supported by macOS.
+@available(macOS 15.0, *)
 struct AvailableLanguageReporter {
     /// Returns supported translation languages, one `language-code<TAB>name` entry per line.
     ///
