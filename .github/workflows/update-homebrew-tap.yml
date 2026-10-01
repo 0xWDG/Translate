@@ -1,0 +1,73 @@
+name: Update Homebrew Tap
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  update-formula:
+    name: Update Homebrew formula
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Calculate the source archive checksum
+        id: source
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          archive_url="https://github.com/0xWDG/Translate/archive/refs/tags/${TAG}.tar.gz"
+          curl --fail --location --retry 3 --output source.tar.gz "$archive_url"
+          echo "sha256=$(shasum -a 256 source.tar.gz | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+
+      - name: Check out the Homebrew tap
+        uses: actions/checkout@v4
+        with:
+          repository: 0xWDG/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-tap
+
+      - name: Update the formula
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          SHA256: ${{ steps.source.outputs.sha256 }}
+        run: |
+          cat > homebrew-tap/Formula/translate.rb <<EOF
+          class Translate < Formula
+            desc "Native macOS command-line translator using Apple’s Translation framework"
+            homepage "https://github.com/0xWDG/Translate"
+            url "https://github.com/0xWDG/Translate/archive/refs/tags/${TAG}.tar.gz"
+            sha256 "${SHA256}"
+
+            depends_on xcode: ["26.0", :build]
+            depends_on :macos
+
+            uses_from_macos "swift"
+
+            def install
+              system "swift", "build", "--disable-sandbox", "--configuration", "release", "--product", "translate"
+              bin.install ".build/release/translate"
+            end
+
+            test do
+              output = shell_output("#{bin}/translate -available")
+              assert_match "Supported translation languages", output
+            end
+          end
+          EOF
+
+      - name: Commit and push the updated formula
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          git -C homebrew-tap config user.name "github-actions[bot]"
+          git -C homebrew-tap config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C homebrew-tap add Formula/translate.rb
+          git -C homebrew-tap diff --cached --quiet || git -C homebrew-tap commit -m "translate ${TAG}"
+          git -C homebrew-tap push

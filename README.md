@@ -90,6 +90,10 @@ swift build -c release
 swiftlint --strict Sources Tests Package.swift
 ```
 
+## Releases
+
+Publishing a GitHub release automatically updates the `translate` formula in [0xWDG/homebrew-tap](https://github.com/0xWDG/homebrew-tap). Before publishing a release, add a `HOMEBREW_TAP_TOKEN` Actions secret to this repository. The token needs **Contents: Read and write** access to `0xWDG/homebrew-tap`; use a fine-grained personal access token limited to that repository.
+
 ## Limitations
 
 - Translation quality and supported languages are determined by the version of macOS and the models Apple provides.
