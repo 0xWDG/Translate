@@ -1,3 +1,13 @@
+//
+//  main.swift
+//  Translate
+//
+//  Created by Wesley de Groot on 2026-10-01.
+//  https://wesleydegroot.nl
+//
+//  https://github.com/0xWDG/Translate
+//  MIT License
+//
 import Foundation
 import NaturalLanguage
 import Translation
